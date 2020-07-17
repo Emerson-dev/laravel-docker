@@ -1,0 +1,89 @@
+version: "3.7"
+
+networks:
+  app-net:
+    driver: overlay
+
+services:
+  nginx:
+    container_name: nginx
+    image: docker_nginx
+    build:
+      context: ./.docker/nginx
+      dockerfile: Dockerfile
+    hostname: nginx
+    tty: true
+    ports:
+      - "8000:80"
+    volumes:
+      - .:/var/www
+    deploy:
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          memory: 100M
+    networks:
+      - app-net
+
+  redis:
+    container_name: redis
+    image: redis:alpine
+    hostname: redis
+    expose:
+      - "6379"
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./.docker/redis/data:/data
+    deploy:
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          memory: 100M
+    networks:
+      - app-net
+
+  app:
+    container_name: app
+    image: docker_app
+    build: .
+    hostname: app
+    volumes:
+      - .:/var/www
+    tty: true
+    deploy:
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          memory: 100M
+    networks:
+      - app-net
+
+  db:
+    container_name: db
+    image: docker_db
+    build:
+      context: .docker/mysql
+      dockerfile: Dockerfile
+    hostname: db
+    command: --innodb-use-native-aio=0
+    environment:
+      - MYSQL_DATABASE=laravel
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_USER=root
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./.docker/mysql/data:/var/lib/mysql
+    tty: true
+    deploy:
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          memory: 100M
+    networks:
+      - app-net

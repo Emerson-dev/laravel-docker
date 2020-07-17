@@ -23,6 +23,8 @@ services:
       resources:
         limits:
           memory: 100M
+    depends_on:
+      - app
     networks:
       - app-net
 
@@ -47,8 +49,9 @@ services:
 
   app:
     container_name: app
-    image: docker_app
-    build: .
+    image: vremerson/laravel-docker:1.0
+    # image: docker_app
+    # build: .
     hostname: app
     volumes:
       - .:/var/www
@@ -59,6 +62,8 @@ services:
       resources:
         limits:
           memory: 100M
+    depends_on:
+      - db
     networks:
       - app-net
 

@@ -1,6 +1,6 @@
 FROM php:7.3.6-fpm-alpine3.9
 
-RUN apk --no-cache add shadow && usermod -u 1000 www-data
+RUN apk add shadow && usermod -u 1000 www-data && groupmod -g 1000 www-data
 RUN apk add bash mysql-client
 RUN docker-php-ext-install pdo pdo_mysql
 
@@ -14,13 +14,12 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 #     php artisan key:generate && \
 #     php artisan config:cache
 
-# COPY . /var/www
+COPY . /var/www
 RUN ln -s public html
 
 # RUN usermod -u 1000 www-data
 # RUN chown -R www-data:www-data /var/www
-# RUN chmod -R 755 /var/www/storage
-# RUN chmod 755 /var/www
+# USER www-data
 
 EXPOSE 9000
 ENTRYPOINT ["php-fpm"]

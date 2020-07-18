@@ -49,10 +49,18 @@ services:
 
   app:
     container_name: app
-    image: vremerson/laravel-docker:1.0
-    # image: docker_app
-    # build: .
+    # image: vremerson/laravel-docker:1.0
+    image: docker_app
+    build: .
     hostname: app
+    entrypoint: dockerize -template ./.docker/app/.env:.env -wait tcp://db:3306 -timeout 40s ./.docker/app/entrypoint.sh
+    environment:
+      - DB_CONNECTION=mysql
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=laravel
+      - DB_USERNAME=root
+      - DB_PASSWORD=root
     volumes:
       - .:/var/www
     tty: true

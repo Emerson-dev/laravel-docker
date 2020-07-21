@@ -1,6 +1,5 @@
-FROM php:7.3.6-fpm-alpine3.9
+FROM php:7.3.6-fpm-alpine3.9 as builder
 
-RUN apk add shadow && usermod -u 1000 www-data && groupmod -g 1000 www-data
 RUN apk add --no-cache openssl bash mysql-client nodejs npm
 RUN docker-php-ext-install pdo pdo_mysql
 
@@ -13,6 +12,26 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSI
 WORKDIR /var/www
 RUN rm -rf /var/www/html
 RUN ln -s public html
+COPY . /var/www
+
+RUN composer install && \
+    php artisan key:generate && \
+    php artisan cache:clear && \
+    chmod -R 775 storage
+
+RUN npm install
+
+FROM php:7.3.6-fpm-alpine3.9
+RUN apk add --no-cache mysql-client
+RUN docker-php-ext-install pdo pdo_mysql
+
+WORKDIR /var/www
+RUN rm -rf /var/www/html
+
+COPY --from=builder /var/www .
+
+# COPY --from=builder /usr/local/bin/dockerize /usr/local/bin/dockerize
+# RUN chmod 755 /usr/local/bin/dockerize
 
 EXPOSE 9000
 ENTRYPOINT ["php-fpm"]

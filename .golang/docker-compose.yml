@@ -1,0 +1,20 @@
+version: '3.7'
+services:
+  golang:
+    container_name: app-golang
+    image: vremerson/codeeducation:1.0
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    hostname: app-golang
+    deploy:
+      restart_policy: { condition: on-failure }
+      resources:
+        limits:
+          memory: 100M
+#     networks:
+#       - golang-net
+
+# networks:
+#   golang-net:
+#     driver: overlay

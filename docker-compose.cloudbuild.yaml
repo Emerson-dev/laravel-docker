@@ -22,12 +22,6 @@ services:
     volumes:
       - .:/var/www
       # - ./.docker/nginx/templates:/etc/nginx/templates
-    deploy:
-      restart_policy:
-        condition: on-failure
-      resources:
-        limits:
-          memory: 100M
     depends_on:
       - app
     networks:
@@ -43,12 +37,6 @@ services:
       - "6379:6379"
     volumes:
       - ./.docker/redis/data:/data
-    deploy:
-      restart_policy:
-        condition: on-failure
-      resources:
-        limits:
-          memory: 100M
     networks:
       - app-net
 
@@ -69,12 +57,6 @@ services:
     volumes:
       - .:/var/www
     tty: true
-    deploy:
-      restart_policy:
-        condition: on-failure
-      resources:
-        limits:
-          memory: 100M
     depends_on:
       - db
     networks:
@@ -97,11 +79,5 @@ services:
     volumes:
       - ./.docker/mysql/data:/var/lib/mysql
     tty: true
-    deploy:
-      restart_policy:
-        condition: on-failure
-      resources:
-        limits:
-          memory: 100M
     networks:
       - app-net

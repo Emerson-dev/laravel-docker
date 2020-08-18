@@ -6,10 +6,10 @@ spec:
   # type: NodePort
   ports:
     - port: 9000
+      targetPort: 9000
     # - protocol: TCP
       # port: 9000
       # nodePort: 30080
 
   selector:
     app: app
-  clusterIP: None
